@@ -11,52 +11,7 @@ class FeatureExtractor(nn.Module):
 
     def forward(self, x):
         return self.features(x)
-
-class StyleRepresentationEvaluator(nn.Module):
-    def __init__(self, feature_layer=11):
-        super(StyleRepresentationEvaluator, self).__init__()
-        vgg_model = models.vgg19(pretrained=True).features
-        self.features = nn.Sequential(*list(vgg_model.children())[:feature_layer + 1])
-        for param in self.features.parameters():
-            param.requires_grad = False  # Freeze the VGG model
-
-        self.gram_matrix = GramMatrix()
-
-    def preprocess_image(self, image_path):
-        image = Image.open(image_path).convert('RGB')
-        preprocess = transforms.Compose([
-            transforms.Resize((224, 224)),  # VGG expects 224x224 images
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
-        return preprocess(image).unsqueeze(0)  # Add batch dimension
-
-    def forward(self, content_image_path, style_image_path):
-        content_tensor = self.preprocess_image(content_image_path)
-        style_tensor = self.preprocess_image(style_image_path)
-
-        content_features = self.features(content_tensor)
-        style_features = self.features(style_tensor)
-
-        content_gram = self.gram_matrix(content_features)
-        style_gram = self.gram_matrix(style_features)
-
-        loss = nn.functional.mse_loss(content_gram, style_gram)
-        return loss
-
-class GramMatrix(nn.Module):
-    def forward(self, input):
-        a, b, c, d = input.size()  # a=batch size(=1)
-        features = input.view(a * b, c * d)  # resize F_XL into \hat F_XL
-        G = torch.mm(features, features.t())  # compute the gram product
-        return G.div(a * b * c * d)
-
-# # Example usage:
-# evaluator = StyleRepresentationEvaluator().to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
-# loss = evaluator('path/to/content_image.jpg', 'path/to/style_image.jpg')
-
-# print(f'Style Representation (Gram Matrix) Loss: {loss.item()}')
-
+    
 #Example of usage Feature Extraction
 # # Initialize VGG with the layers up to the relu4_2
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
