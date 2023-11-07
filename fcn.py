@@ -1,11 +1,15 @@
 import torch
+import urllib
+from PIL import Image
+from torchvision import transforms
+import matplotlib.pyplot as plt
+
 
 model = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', pretrained=True)
 # or
 # model = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet101', pretrained=True)
 model.eval()
 
-import urllib
 #
 # url, filename = ("https://github.com/pytorch/hub/raw/master/images/deeplab1.png", "data/deeplab1.png")
 # try:
@@ -13,11 +17,11 @@ import urllib
 # except:
 #     urllib.request.urlretrieve(url, filename)
 
-from PIL import Image
-from torchvision import transforms
+filedir = "./pytorch-CycleGAN-and-pix2pix/datasets/img_cityscape/testA"
+filename = "/140_A.jpg"
 
-filename = "data/images/dancing.jpg"
-input_image = Image.open(filename)
+print(filedir + filename)
+input_image = Image.open(filedir+filename)
 input_image = input_image.convert("RGB")
 preprocess = transforms.Compose([
     transforms.ToTensor(),
@@ -46,6 +50,6 @@ colors = (colors % 255).numpy().astype("uint8")
 r = Image.fromarray(output_predictions.byte().cpu().numpy()).resize(input_image.size)
 r.putpalette(colors)
 
-import matplotlib.pyplot as plt
+
 plt.imshow(r)
 plt.show()
