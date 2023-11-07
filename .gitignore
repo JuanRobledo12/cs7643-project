@@ -3,3 +3,9 @@ __pycache__
 
 # Ignore Jupyter Notebook .ipynb_checkpoints directories
 .ipynb_checkpoints/
+
+# Ignore the dataset folders
+gtFine_trainvaltest/
+leftImg8bit/
+
+img_cityscape/
