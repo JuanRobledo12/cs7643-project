@@ -19,5 +19,28 @@ One notebook provides examples of single-image generation, while the other noteb
 
 - The evaluation process in NST follows the same metrics used in CycleGAN.
 
+### How to use the new `style_transfer.py` with the best hyperparameters:
+```
+style_transfer = StyleTransfer("path_to_content_img.jpg", "path_to_style_img.jpg")
+
+output = style_transfer.run_style_transfer(
+        style_transfer.content_img,
+        style_transfer.style_img,
+        style_transfer.content_img.clone(),
+        num_steps=300,
+        style_weight=1e6,
+        content_weight=0.5,
+        content_layers=['relu_1'],
+        style_layers=['relu_1', 'relu_2', 'relu_3', 'relu_4', 'relu_5'],
+        tv_weight = 0.0,
+        optimizer_choice='lbfgs',
+        loss_choice='generic'
+    )
+
+# Add code to save or plot the result image
+
+```
+
+
 ## Datasets:
 - Ensure that you have the evaluation dataset to run tests on the models, particularly for monet2photo testing.
